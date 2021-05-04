@@ -1,5 +1,6 @@
 package counterWords.store;
 
+import counterWords.model.Page;
 import counterWords.model.Word;
 import java.sql.*;
 import java.sql.PreparedStatement;
@@ -8,18 +9,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-public class WordPageStore implements Store<Word>, AutoCloseable {
+public class WordTextStore implements Store<Word>, AutoCloseable {
     private Map<String, Integer> words = new HashMap<>();
 
     private Connection cnn;
 
-    public WordPageStore() throws SQLException {
+    public WordTextStore() throws SQLException {
             // this.cnn = ConnectionRollback.create(this.init())
             Properties cfg = new Properties();
             this.cnn = Base.getConnection(cfg);
         }
 
-    public WordPageStore(Connection connection) {
+    public WordTextStore(Connection connection) {
         this.cnn = connection;
     }
 

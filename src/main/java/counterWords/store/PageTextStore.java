@@ -1,6 +1,7 @@
 package counterWords.store;
 
 import counterWords.model.Page;
+import counterWords.model.Word;
 
 import java.sql.*;
 import java.util.*;
