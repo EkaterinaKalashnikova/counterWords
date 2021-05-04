@@ -39,7 +39,6 @@ public class App {
         this.wordStore = wordStore;
     }
 
-
     // public void run() throws IOException, SQLException {
 
     /**
@@ -55,22 +54,8 @@ public class App {
 
     // Действия пользователя:
     // 1. Спарсить новую страницу
-       /* Store<Page> pageTextStore = new PageTextStore();
-        Page page = new Page(url);
-        pageTextStore.save(page);
-        ParserPage tpp = new TextPageParser();
-        Map<String, Integer> map = tpp.parse(url);
-        Store<Word> wordTextStore = new WordTextStore();
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            Word word = new Word(entry.getKey(), entry.getValue());
-            word.setPageId(page.getId());
-            wordTextStore.save(word);
-        }*/
-
     // 2. Загрузить все страницы
-
     // 3. Показать статистику по отдельной страницы. Найти по id
-
     // 4. Показать статистику по БД
     public void init(Input input, Store store, List<UserAction> actions) throws IOException, SQLException {
         boolean run = true;
@@ -114,7 +99,6 @@ public class App {
             System.out.println(map.size());
 
 
-
         /*List<UserAction> actions = new ArrayList<>();
         actions.add(new ParseNewPage());x
         actions.add(new LoadAllPages());
@@ -131,18 +115,7 @@ public class App {
 }
 
 
-       /* String url = "https://www.simbirsoft.com";
-        Store<Page> pageTextStore = new PageTextStore();
-        Page page = new Page(url);
-        pageTextStore.save(page);
-        ParserPage tpp = new TextPageParser();
-        Map<String, Integer> map = tpp.parse(url);
-        Store<Word> wordTextStore = new WordTextStore();
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            Word word = new Word(entry.getKey(), entry.getValue());
-            word.setPageId(page.getId());
-            wordTextStore.save(word);
-        }*/
+
 
 
 
