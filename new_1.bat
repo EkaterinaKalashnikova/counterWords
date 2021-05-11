@@ -1,2 +1,2 @@
-java -jar counterWords.jar
+java -jar counterwords.jar
 
