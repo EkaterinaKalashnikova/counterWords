@@ -27,9 +27,6 @@ public class Word {
         this.count = count;
     }
 
-    public Word(String value, String count) {
-    }
-
     public String getValue() {
         return value;
     }
@@ -82,6 +79,6 @@ public class Word {
 
     @Override
     public String toString() {
-        return "Word{" + "id=" + id + ", value='" + value + '\'' + ", count=" + count + ", pageId=" + pageId + '}';
+        return "Word{" + "id=" + id + ", value='" + value + '\'' + ", count=" + count + ", pageId=" + pageId + '}'+ "\n";
     }
 }

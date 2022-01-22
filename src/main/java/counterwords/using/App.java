@@ -1,16 +1,12 @@
 package counterwords.using;
 
 import counterwords.io.*;
-import counterwords.model.Page;
-import counterwords.model.Word;
-import counterwords.parser.ParserPage;
-import counterwords.parser.TextPageParser;
 import counterwords.store.PageTextStore;
-import counterwords.store.Store;
+import counterwords.store.StorePage;
+import counterwords.store.StoreWord;
 import counterwords.store.WordTextStore;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -18,99 +14,76 @@ import java.util.*;
 public class App {
     private static final Logger LOGGER = LogManager.getLogger(App.class.getName());
 
-    private static Input input;
+    private Input input;
 
-    private static Store store;
+    private StorePage storePage;
 
-    private Output output;
+    private StoreWord storeWord;
 
-    private TextPageParser wordCounter;
+    private Output out;
 
-    private PageTextStore pageStore;
+    private Output consoleOutput;
 
-    private WordTextStore wordStore;
-
-
-    public App(Input input, Output output, TextPageParser wordCounter, PageTextStore pageStore, WordTextStore wordStore) {
+    private App(Input input, Output out, StorePage storePage, StoreWord storeWord) {
         this.input = input;
-        this.output = output;
-        this.wordCounter = wordCounter;
-        this.pageStore = pageStore;
-        this.wordStore = wordStore;
+        this.out = out;
+        this.storePage = storePage;
+        this.storeWord = storeWord;
+        this.consoleOutput = new ConsoleOutput();
     }
 
-    // public void run() throws IOException, SQLException {
-
-    /**
-     * Реализовать логику работы с пользователем
-     */
-    // String url = "https://www.simbirsoft.com";
-    // Спросить URL, спрасить страницу, сохранить в БД и выведем статистику
-
-    //System.out.println();
-    // System.out.println("Выберите действие: ");
-
-    // String url = "https://www.simbirsoft.com";
-
-    // Действия пользователя:
-    // 1. Спарсить новую страницу
-    // 2. Загрузить все страницы
-    // 3. Показать статистику по отдельной страницы. Найти по id
-    // 4. Показать статистику по БД
-    public void init(Input input, Store store, List<UserAction> actions) throws IOException, SQLException {
+    private void init(List<UserAction> actions) throws IOException, SQLException {
         boolean run = true;
         while (run) {
             this.showMenu(actions);
-            int select = input.askInt("Выберите действие: ", actions.size());
+            int select = input.askInt("Выберите действие: ");
+            if (select == 6) {
+                consoleOutput.write("Выход из программы)");
+                break;
+            }
+            if (select == 4) {
+                String fileName = input.askStr("Введите название файла: ");
+                out = new FileOutput(fileName);
+                consoleOutput.write("Следующие действия будут записаны в файл " + fileName);
+                continue;
+            }
+            if (select == 5) {
+                out = new ConsoleOutput();
+                consoleOutput.write("Следующие действия будут записаны в консоль ");
+                continue;
+            }
+            if (select < 0 || select >= actions.size()) {
+                consoleOutput.write("Неправильный ввод, вы можете выбрать: 0 .. " + (actions.size() - 1));
+                continue;
+            }
             UserAction action = actions.get(select);
-            run = action.execute(input, store);
+            run = action.execute(input, out, storePage, storeWord);
         }
     }
 
-    private void showMenu(List<UserAction> actions) {
-        System.out.println("Menu:");
+    private void showMenu(List<UserAction> actions) throws IOException {
+        consoleOutput.write("Menu:");
         for (int index = 0; index < actions.size(); index++) {
-            System.out.println(index + ". " + actions.get(index).name());
+            consoleOutput.write(index + ". " + actions.get(index).name());
         }
+        consoleOutput.write("4. === Записать следующее действие в файл === ");
+        consoleOutput.write("5. === Прекратить запись в файл === ");
+        consoleOutput.write("6. === Выход === ");
     }
 
     public static void main(String[] args) throws IOException, SQLException {
         LOGGER.debug("All work!");
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Введите url: ");
-        String url = scan.nextLine();
-        url = url.replace('"', ' ').trim();
-        System.out.println(url);
-       // System.out.println("Выберите действие: ");
-        Store<Page> pageTextStore = new PageTextStore();
-        Page page = new Page(url);
-        pageTextStore.save(page);
-        ParserPage tpp = new TextPageParser();
-        Map<String, Integer> map = tpp.parse(url);
-        Store<Word> wordTextStore = new WordTextStore();
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            Word word = new Word(entry.getKey(), entry.getValue());
-            word.setPageId(page.getId());
-            wordTextStore.save(word);
-            String key = entry.getKey();
-            Integer value = entry.getValue();
-            System.out.println(key + "  -  " + value);
-        }
-            System.out.println(map.size());
-
-
-        /*List<UserAction> actions = new ArrayList<>();
-        actions.add(new ParseNewPage());x
+        List<UserAction> actions = new ArrayList<>();
+        actions.add(new ParseNewPage());
         actions.add(new LoadAllPages());
         actions.add(new StatisticsPageById());
         actions.add(new ShowDatabaseStatistics());
         new App(
                 new ConsoleInput(),
                 new ConsoleOutput(),
-                new TextPageParser(),
                 new PageTextStore(),
                 new WordTextStore()
-        ).init(input, store, actions);*/
+        ).init(actions);
     }
 }
 

@@ -1,22 +1,27 @@
 package counterwords.store;
 
 import counterwords.model.Page;
+import counterwords.parser.TextPageParser;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
 
-public class PageTextStore implements Store<Page>, AutoCloseable {
+public class PageTextStore implements StorePage, AutoCloseable {
+    private static final Logger LOG = Logger.getLogger(PageTextStore.class.getName());
+
     private List<Page> pages = new ArrayList<>();
 
     private Connection cnn;
 
-    public PageTextStore() throws SQLException {
-        // this.cnn = ConnectionRollback.create(this.init())
+    public PageTextStore() {
         Properties cfg = new Properties();
         this.cnn = Base.getConnection(cfg);
     }
 
-   @Override
+    @Override
     public void save(Page page) {
         try (PreparedStatement statement =
                      cnn.prepareStatement(
@@ -31,7 +36,7 @@ public class PageTextStore implements Store<Page>, AutoCloseable {
                 pages.add(page);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.info(e.getMessage());
         }
    }
 
@@ -47,7 +52,7 @@ public class PageTextStore implements Store<Page>, AutoCloseable {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.info(e.getMessage());
         }
         return pages1;
     }
@@ -56,16 +61,8 @@ public class PageTextStore implements Store<Page>, AutoCloseable {
     public Page findById(int id) throws SQLException {
         Page page = null;
         try (PreparedStatement statement = cnn.prepareStatement("select * from pages where id = ?")) {
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    int id1 = resultSet.getInt("id");
-                    String url = resultSet.getString("url");
-                    page = new Page(id1, url);
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            statement.setInt(1, id);
+            page = getPage(page, statement);
         }
         return page;
     }
@@ -75,6 +72,30 @@ public class PageTextStore implements Store<Page>, AutoCloseable {
         if (cnn != null) {
             cnn.close();
         }
+    }
+
+    @Override
+    public Page findByURL(String url) throws SQLException {
+        Page page = null;
+        try (PreparedStatement statement = cnn.prepareStatement("select * from pages where url = ?")) {
+            statement.setString(1, url);
+            page = getPage(page, statement);
+        }
+        return page;
+    }
+
+    private Page getPage(Page page, PreparedStatement statement) {
+        try (ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                int id1 = resultSet.getInt("id");
+                String url1 = resultSet.getString("url");
+                page = new Page(id1, url1);
+            }
+
+        } catch (SQLException e) {
+            LOG.info(e.getMessage());
+        }
+        return page;
     }
 }
 

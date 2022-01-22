@@ -1,14 +1,12 @@
 package counterwords.using;
 
 import counterwords.io.Input;
+import counterwords.io.Output;
 import counterwords.model.Page;
 import counterwords.model.Word;
 import counterwords.parser.ParserPage;
 import counterwords.parser.TextPageParser;
-import counterwords.store.PageTextStore;
 import counterwords.store.Store;
-import counterwords.store.WordTextStore;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
@@ -17,25 +15,23 @@ public class ParseNewPage implements UserAction {
 
     @Override
     public String name() {
-       // return "=== Get a parser of page ====";
-        return "=== Спарсить новую страницу ===";
+        return "=== Распарсить новую страницу ===";
     }
 
     @Override
-    public boolean execute(Input input, Store store) throws SQLException, IOException {
-        Store<Page> pageTextStore = new PageTextStore();
-       // String url = "";
-        String url = "https://www.simbirsoft.com";
+    public boolean execute(Input input, Output output, Store<Page> storePage, Store<Word> storeWord) throws SQLException, IOException {
+        String url = input.askStr("Введите URL: ");
         Page page = new Page(url);
-        pageTextStore.save(page);
+        storePage.save(page);
         ParserPage tpp = new TextPageParser();
-        Map<String, Integer> map = tpp.parse(url);
-        Store<Word> wordTextStore = new WordTextStore();
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+        Map<String, Integer> mapWords = tpp.parse(url);
+        page.setWords(mapWords);
+        for (Map.Entry<String, Integer> entry : mapWords.entrySet()) {
             Word word = new Word(entry.getKey(), entry.getValue());
             word.setPageId(page.getId());
-            wordTextStore.save(word);
+            storeWord.save(word);
         }
+        output.write(page);
         return true;
     }
 }

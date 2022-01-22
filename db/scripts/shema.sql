@@ -15,3 +15,7 @@ create table statistica(
     word text,
     count int
 );
+
+delete from words;
+
+delete from pages;

@@ -3,13 +3,14 @@ package counterwords.using;
 import counterwords.io.FileOutput;
 import counterwords.io.Input;
 import counterwords.io.Output;
+import counterwords.model.Page;
 import counterwords.model.Word;
 import counterwords.store.Store;
-import counterwords.store.WordTextStore;
-
+import counterwords.store.StoreWord;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ShowDatabaseStatistics implements UserAction {
     @Override
@@ -18,13 +19,14 @@ public class ShowDatabaseStatistics implements UserAction {
     }
 
     @Override
-    public boolean execute(Input input, Store store) throws SQLException, IOException {
-        String url = "https://www.simbirsoft.com";
-        WordTextStore storeWord = new WordTextStore();
-        List<Word> fileList = storeWord.findAll();
-        String fileLogName = "C:\\projects\\counterWords\\src\\main\\java\\counterWords\\store\\log.txt";
-        Output fileOut = new FileOutput(fileLogName, fileList);
-        fileOut.write();
+    public boolean execute(Input input, Output output, Store<Page> storePage, Store<Word> storeWord) throws IOException {
+        List<Page> fileListPages = storePage.findAll();
+        for (Page pageList : fileListPages) {
+            List<Word> listAllWords = ((StoreWord) storeWord).getWordByIdPage(pageList);
+            Map<String, Integer> mapWords = listAllWords.stream().collect(Collectors.toMap(Word::getValue, Word::getCount));
+            pageList.setWords(mapWords);
+        }
+       output.write(fileListPages);
         return true;
     }
 }

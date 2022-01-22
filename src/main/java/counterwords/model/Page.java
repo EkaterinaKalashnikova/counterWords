@@ -2,6 +2,7 @@ package counterwords.model;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Page {
     private int id;
@@ -58,5 +59,18 @@ public class Page {
     @Override
     public int hashCode() {
         return Objects.hash(id, url);
+    }
+
+    @Override
+    public String toString() {
+        return "Page{"
+                + "id='" + id + '\''
+                + ", url='" + url + '\''
+                + ", \n words='"
+                + words.entrySet().stream()
+                .map(key -> key.getKey() + "=" + key.getValue())
+                .collect(Collectors.joining(", \n", "{", "}"))
+                + '\''
+                + '}' + "\n";
     }
 }

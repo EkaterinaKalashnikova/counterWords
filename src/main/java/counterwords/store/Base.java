@@ -6,8 +6,6 @@ import java.sql.DriverManager;
 import java.util.Properties;
 
 public class Base {
-    private Connection cnn;
-    private Properties cfg;
 
     public static Connection getConnection(Properties cfg) {
         Connection cnn;
