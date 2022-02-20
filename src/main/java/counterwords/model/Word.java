@@ -79,6 +79,6 @@ public class Word {
 
     @Override
     public String toString() {
-        return "Word{" + "id=" + id + ", value='" + value + '\'' + ", count=" + count + ", pageId=" + pageId + '}'+ "\n";
+        return "Word{" + "id=" + id + ", value='" + value + '\'' + ", count=" + count + ", pageId=" + pageId + '}' + "\n";
     }
 }
